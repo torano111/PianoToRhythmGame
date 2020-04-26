@@ -14,10 +14,10 @@ namespace PianoToRhythmGame.Debugging
         {
             for (var noteIndex = 0; noteIndex < NUM_NOTES; noteIndex++)
             {
-                var onNote = MidiMaster.GetKeyDown(noteIndex);
-                if (onNote)
+                var velocity = MidiMaster.GetKey(noteIndex);
+                if (velocity > 0f)
                 {
-                    Debug.Log($"On:{noteIndex}");
+                    Debug.Log($"Note: {noteIndex}, Velocity: {velocity}");
                 }
             }
         }
