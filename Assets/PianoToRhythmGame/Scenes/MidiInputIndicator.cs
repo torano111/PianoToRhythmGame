@@ -14,19 +14,6 @@ namespace PianoToRhythmGame
         public int NoteNumber { get => this._noteNumber; set => this._noteNumber = value; }
 
         [SerializeField]
-        float _width = 1f;
-
-        public float Width
-        {
-            get => _width;
-            set
-            {
-                _width = value;
-                transform.localScale = new Vector3(_width, transform.localScale.y, transform.localScale.z);
-            }
-        }
-
-        [SerializeField]
         float _minHeight = 1f;
 
         public float MinHeight
@@ -52,6 +39,21 @@ namespace PianoToRhythmGame
 
         SpriteRenderer _spriteRenderer;
 
+        [SerializeField]
+        int _numTotalNotes = 128;
+
+        public int NumTotalNotes { get => this._numTotalNotes; set => this._numTotalNotes = value; }
+
+        Vector3 ScreenBottomLeft
+        {
+            get => Camera.main.ScreenToWorldPoint(Vector3.zero);
+        }
+
+        Vector3 ScreenTopRight
+        {
+            get => Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0f));
+        }
+
         void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -75,13 +77,23 @@ namespace PianoToRhythmGame
 
         void UpdateIndicator(float noteValue)
         {
-            var bottom = transform.position.y - transform.localScale.y / 2.0f;
+            var bottomLeft = ScreenBottomLeft;
+            var topRight = ScreenTopRight;
+
+            var bottom = bottomLeft.y;
+            var left = bottomLeft.x;
+            var right = topRight.x;
+            var top = topRight.y;
+
+            var width = Mathf.Abs(left - right) / (float)_numTotalNotes;
+
             var minToMax = MaxHeight - MinHeight;
             var height = MinHeight + minToMax * noteValue;
-            transform.localScale = new Vector3(transform.localScale.x, height, transform.localScale.z);
+            transform.localScale = new Vector3(width, height, transform.localScale.z);
 
+            var posX = left + width * NoteNumber + width / 2.0f;
             var posY = bottom + height / 2.0f;
-            transform.position = new Vector3(transform.position.x, posY, transform.position.z);
+            transform.position = new Vector3(posX, posY, transform.position.z);
 
             ChangeColor(Color.Lerp(_offColor, _onColor, noteValue));
         }
