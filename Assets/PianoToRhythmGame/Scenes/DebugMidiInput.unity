@@ -269,6 +269,7 @@ MonoBehaviour:
     type: 3}
   _indicatorMinHeight: 1
   _indicatorMaxHeight: 10
+  _numTotalNotes: 128
 --- !u!4 &1258164174
 Transform:
   m_ObjectHideFlags: 0
