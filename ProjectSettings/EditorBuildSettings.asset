@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/PianoToRhythmGame/Scenes/DebugMidiInput.unity
+    path: Assets/PianoToRhythmGame/Scenes/Debugging/DebugMidiInput/DebugMidiInput.unity
     guid: b43c73de8aa6bf840a88ab38640ed070
   m_configObjects: {}
