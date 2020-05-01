@@ -2,12 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace PianoToRhythmGame
+namespace PianoToRhythmGame.Piano
 {
-    public enum PianoKey
+    // number of keys of a keyboard
+    public enum PianoKeyboardType
+    {
+        Key88,
+        Key61,
+    }
+
+    // color of a key
+    public enum PianoKeyColor
     {
         // while tone
         White,
+
         // half tone
         Black,
     }
@@ -20,6 +29,6 @@ namespace PianoToRhythmGame
         Fa,
         Sol,
         La,
-        Si,
+        Ti,
     }
 }
