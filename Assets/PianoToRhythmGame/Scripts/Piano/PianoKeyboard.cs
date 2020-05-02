@@ -44,19 +44,25 @@ namespace PianoToRhythmGame.Piano
         {
             var numKeys = 0;
             var offset = 0;
+            var startNoteNumber = 0;
 
             switch (keyboardType)
             {
                 case PianoKeyboardType.Key88:
                     numKeys = 88;
                     offset = 3;
+                    startNoteNumber = 21;
                     break;
                 case PianoKeyboardType.Key61:
+                    numKeys = 61;
+                    offset = 0;
+                    startNoteNumber = 36;
+                    break;
                 default:
                     throw new NotImplementedException();
             }
 
-            BuildKeyboard(numKeys, offset);
+            BuildKeyboard(numKeys, offset, startNoteNumber);
         }
 
         /// <summary>
@@ -64,7 +70,8 @@ namespace PianoToRhythmGame.Piano
         /// </summary>
         /// <param name = "numKeys"> number of keys of a keyboard </param>
         /// <param name = "offset"> number of keys before the first Do. e.g. 3 if the most left key is La. </param>
-        void BuildKeyboard(int numKeys, int offset)
+        /// <param name = "startNoteNumber"> the first note number which used to take an input from MidiMaster. </param>
+        void BuildKeyboard(int numKeys, int offset, int startNoteNumber)
         {
             _keys.Clear();
             _keyPlacers.Clear();
@@ -90,6 +97,7 @@ namespace PianoToRhythmGame.Piano
                         throw new ArgumentException();
                 }
 
+                key.NoteNumber = startNoteNumber + i;
                 key.transform.SetParent(this.transform);
 
                 var keyPlacer = key.gameObject.GetOrAddComponent<PianoKeyPlacer>();

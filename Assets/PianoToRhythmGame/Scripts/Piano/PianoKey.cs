@@ -8,6 +8,11 @@ namespace PianoToRhythmGame.Piano
 {
     public class PianoKey : MonoBehaviour
     {
+        [SerializeField]
+        SpriteRenderer _keyRenderer;
+
+        public SpriteRenderer KeyRenderer => _keyRenderer;
+
         /// <summary>
         /// transform which represents the top right corner of a key
         /// </summary>
@@ -47,6 +52,11 @@ namespace PianoToRhythmGame.Piano
                 return (TopRightPosition + BottomLeftPosition) / 2.0f;
             }
         }
+
+        /// <summary>
+        /// used to get input from MidiMaster
+        /// </summary>
+        public int NoteNumber { get; set; }
 
         ReactiveProperty<bool> _isPressingRP = new ReactiveProperty<bool>(false);
         public IReadOnlyReactiveProperty<bool> IsPressingReactiveProperty => _isPressingRP;

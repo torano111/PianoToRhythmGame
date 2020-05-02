@@ -70,8 +70,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 098ce8da19688fc438ffc71ee3c3252a, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 55f97d335b7b30641961121535da3871, type: 3}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -121,6 +121,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2178871914591679607}
   - component: {fileID: 2178871914591679600}
+  - component: {fileID: 4284191384881435087}
+  - component: {fileID: 2634588678659287093}
   m_Layer: 0
   m_Name: PianoBlackKey
   m_TagString: Untagged
@@ -157,8 +159,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: accf1e5f4e3e5534080079dab88041d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _keyRenderer: {fileID: 53377803514886059}
   _topRightTransform: {fileID: 53377803885848569}
   _bottomLeftTransform: {fileID: 2178871914665628386}
+--- !u!114 &4284191384881435087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2178871914591679601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9132ca11393e6fd42bdd9c2dbdc2be82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2634588678659287093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2178871914591679601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fab1d1473b33cc49bfbe490313f19eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _colorOnPress: {r: 0.8679245, g: 0.09416164, b: 0.09416164, a: 0.5176471}
 --- !u!1 &2178871914665628387
 GameObject:
   m_ObjectHideFlags: 0
