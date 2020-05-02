@@ -48,6 +48,9 @@ namespace PianoToRhythmGame.Piano
             get => Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0f));
         }
 
+        Vector2Int _lastResolution;
+        bool _initial = true;
+
         void Awake()
         {
             _key = GetComponent<PianoKey>();
@@ -56,7 +59,12 @@ namespace PianoToRhythmGame.Piano
         // Update is called once per frame
         void Update()
         {
-            UpdateKeyPosition();
+            if (_initial || _lastResolution.x != Screen.width || _lastResolution.y != Screen.height)
+            {
+                _initial = false;
+                _lastResolution = new Vector2Int(Screen.width, Screen.height);
+                UpdateKeyPosition();
+            }
         }
 
         void UpdateKeyPosition()

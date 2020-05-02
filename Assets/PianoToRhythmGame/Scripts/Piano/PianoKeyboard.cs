@@ -10,9 +10,10 @@ namespace PianoToRhythmGame.Piano
 {
     public class PianoKeyboard : MonoBehaviour
     {
+        const int NoteLength = 128;
+
         [SerializeField]
         PianoKey _whiteKeyPrefab, _blackKeyPrafab;
-
 
         // todo make ReactiveProperty of PianoKeyboardType and use it so a keyboard can be changed dynamically.
         [SerializeField]
@@ -32,6 +33,9 @@ namespace PianoToRhythmGame.Piano
 
         public int NumKeys => _keys.Count;
         public int FirstNoteNumber => _keys.Count > 0 ? _keys.First().Key : -1;
+
+        Subject<Unit> _onBuildKeyboard => new Subject<Unit>();
+        public IObservable<Unit> OnBuildKeyboard => _onBuildKeyboard;
 
         public PianoKey GetKey(int noteNumber)
         {
@@ -107,6 +111,12 @@ namespace PianoToRhythmGame.Piano
             for (var i = 0; i < numKeys; i++)
             {
                 var noteNumber = startNoteNumber + i;
+
+                if (noteNumber >= NoteLength)
+                {
+                    break;
+                }
+
                 var keyColor = PianoUtility.GetPianoKeyColor(startKeyIndex + i);
 
                 PianoKey key;
@@ -140,6 +150,8 @@ namespace PianoToRhythmGame.Piano
                     numWhiteKeys++;
                 }
             }
+
+            _onBuildKeyboard.OnNext(Unit.Default);
         }
 
         PianoKey InstantiateKey(PianoKey pianoKeyPrefab)
