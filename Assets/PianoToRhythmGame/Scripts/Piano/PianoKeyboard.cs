@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using System;
 using PianoToRhythmGame.Utility;
+using System.Linq;
 
 namespace PianoToRhythmGame.Piano
 {
@@ -26,8 +27,21 @@ namespace PianoToRhythmGame.Piano
         [SerializeField]
         FloatReactiveProperty _spaceBtwKeys = new FloatReactiveProperty(0f);
 
-        List<PianoKey> _keys = new List<PianoKey>();
-        List<PianoKeyPlacer> _keyPlacers = new List<PianoKeyPlacer>();
+        // note number and piano key
+        Dictionary<int, PianoKey> _keys = new Dictionary<int, PianoKey>();
+
+        public int NumKeys => _keys.Count;
+        public int FirstNoteNumber => _keys.Count > 0 ? _keys.First().Key : -1;
+
+        public PianoKey GetKey(int noteNumber)
+        {
+            if (_keys.TryGetValue(noteNumber, out var key))
+            {
+                return key;
+            }
+
+            return null;
+        }
 
         // Start is called before the first frame update
         void Start()
@@ -74,15 +88,26 @@ namespace PianoToRhythmGame.Piano
         void BuildKeyboard(int numKeys, int offset, int startNoteNumber)
         {
             _keys.Clear();
-            _keyPlacers.Clear();
 
             var octaveLength = PianoUtility.NumKeysInOctave;
-            var keyIndex = octaveLength - offset;
+            var startKeyIndex = octaveLength - offset;
             var numWhiteKeys = 0;
 
-            for (var i = 0; i < numKeys; i++, keyIndex++)
+            var numTotalWhiteKeys = 0;
+            for (var i = 0; i < numKeys; i++)
             {
-                var keyColor = PianoUtility.GetPianoKeyColor(keyIndex);
+                var keyColor = PianoUtility.GetPianoKeyColor(startKeyIndex + i);
+
+                if (keyColor == PianoKeyColor.White)
+                {
+                    numTotalWhiteKeys++;
+                }
+            }
+
+            for (var i = 0; i < numKeys; i++)
+            {
+                var noteNumber = startNoteNumber + i;
+                var keyColor = PianoUtility.GetPianoKeyColor(startKeyIndex + i);
 
                 PianoKey key;
                 switch (keyColor)
@@ -97,29 +122,23 @@ namespace PianoToRhythmGame.Piano
                         throw new ArgumentException();
                 }
 
-                key.NoteNumber = startNoteNumber + i;
+                key.NoteNumber = noteNumber;
                 key.transform.SetParent(this.transform);
 
                 var keyPlacer = key.gameObject.GetOrAddComponent<PianoKeyPlacer>();
                 keyPlacer.NumWhilteKeysBeforeThis = numWhiteKeys;
                 keyPlacer.KeyColor = keyColor;
+                keyPlacer.NumTotalWhiteKeys = numTotalWhiteKeys;
 
                 _keyboardWidthOffset.Subscribe(widthOffset => keyPlacer.WidthOffset = widthOffset).AddTo(keyPlacer);
                 _keyboardHeightOffset.Subscribe(heightOffset => keyPlacer.HeightOffset = heightOffset).AddTo(keyPlacer);
 
-                _keys.Add(key);
-                _keyPlacers.Add(keyPlacer);
+                _keys.Add(noteNumber, key);
 
                 if (keyColor == PianoKeyColor.White)
                 {
                     numWhiteKeys++;
                 }
-            }
-
-            for (var i = 0; i < _keyPlacers.Count; i++)
-            {
-                var keyPlacer = _keyPlacers[i];
-                keyPlacer.NumTotalWhiteKeys = numWhiteKeys;
             }
         }
 
