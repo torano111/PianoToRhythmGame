@@ -28,7 +28,7 @@ namespace PianoToRhythmGame.Piano
 
             if (_preInput < PRESS_THRESHOLD && PRESS_THRESHOLD <= curInput)
             {
-                _key.PressKey();
+                _key.PressKey(curInput);
             }
             else if (curInput < RELEASE_THRESHOLD && RELEASE_THRESHOLD <= _preInput)
             {

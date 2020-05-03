@@ -58,14 +58,21 @@ namespace PianoToRhythmGame.Piano
         /// </summary>
         public int NoteNumber { get; set; }
 
+        public float Velocity { get; private set; }
         ReactiveProperty<bool> _isPressingRP = new ReactiveProperty<bool>(false);
         public IReadOnlyReactiveProperty<bool> IsPressingReactiveProperty => _isPressingRP;
         public bool IsPressing => IsPressingReactiveProperty.Value;
 
         public void PressKey()
         {
+            PressKey(1f);
+        }
+
+        public void PressKey(float velocity)
+        {
             if (!IsPressing)
             {
+                this.Velocity = velocity;
                 _isPressingRP.Value = true;
             }
         }

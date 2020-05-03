@@ -121,7 +121,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2178871914591679607}
   - component: {fileID: 2178871914591679600}
-  - component: {fileID: 4284191384881435087}
   - component: {fileID: 2634588678659287093}
   m_Layer: 0
   m_Name: PianoBlackKey
@@ -162,18 +161,6 @@ MonoBehaviour:
   _keyRenderer: {fileID: 53377803514886059}
   _topRightTransform: {fileID: 53377803885848569}
   _bottomLeftTransform: {fileID: 2178871914665628386}
---- !u!114 &4284191384881435087
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2178871914591679601}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9132ca11393e6fd42bdd9c2dbdc2be82, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2634588678659287093
 MonoBehaviour:
   m_ObjectHideFlags: 0
