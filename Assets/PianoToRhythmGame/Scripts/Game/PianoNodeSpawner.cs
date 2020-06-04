@@ -18,12 +18,27 @@ namespace PianoToRhythmGame.Game
         // Start is called before the first frame update
         void Start()
         {
+            _keyboard.OnBuildKeyboard
+                     .Subscribe(_ =>
+                     {
+                         for (var i = _keyboard.FirstNoteNumber; i < _keyboard.FirstNoteNumber + _keyboard.NumKeys; i++)
+                         {
+                             var key = _keyboard.GetKey(i);
+                         }
+                     });
         }
 
-        // Update is called once per frame
-        void Update()
+        IDisposable SetupSpawnNodeStream(PianoKey key)
         {
+            var result = key.IsPressingReactiveProperty
+                            .Where(pressing => pressing)
+                            .Select(_ => key.Velocity)
+                            .Subscribe(velocity =>
+                            {
 
+                            });
+
+            return result;
         }
     }
 }
