@@ -5,12 +5,16 @@ using UniRx;
 using System;
 using PianoToRhythmGame.Utility;
 using System.Linq;
+using PianoToRhythmGame.Game;
 
 namespace PianoToRhythmGame.Piano
 {
     public class PianoKeyboard : MonoBehaviour
     {
         const int NoteLength = 128;
+
+        [SerializeField]
+        ScreenIndicator _screenIndicator;
 
         [SerializeField]
         PianoKey _whiteKeyPrefab, _blackKeyPrafab;
@@ -92,6 +96,7 @@ namespace PianoToRhythmGame.Piano
         void BuildKeyboard(int numKeys, int offset, int startNoteNumber)
         {
             _keys.Clear();
+            // todo destroy old keys
 
             var octaveLength = PianoUtility.NumKeysInOctave;
             var startKeyIndex = octaveLength - offset;
@@ -135,13 +140,41 @@ namespace PianoToRhythmGame.Piano
                 key.NoteNumber = noteNumber;
                 key.transform.SetParent(this.transform);
 
-                var keyPlacer = key.gameObject.GetOrAddComponent<PianoKeyPlacer>();
-                keyPlacer.NumWhilteKeysBeforeThis = numWhiteKeys;
-                keyPlacer.KeyColor = keyColor;
-                keyPlacer.NumTotalWhiteKeys = numTotalWhiteKeys;
+                if (_screenIndicator == null)
+                {
 
-                _keyboardWidthOffset.Subscribe(widthOffset => keyPlacer.WidthOffset = widthOffset).AddTo(keyPlacer);
-                _keyboardHeightOffset.Subscribe(heightOffset => keyPlacer.HeightOffset = heightOffset).AddTo(keyPlacer);
+                    var keyPlacer = key.gameObject.GetOrAddComponent<PianoKeyPlacer>();
+                    keyPlacer.NumWhilteKeysBeforeThis = numWhiteKeys;
+                    keyPlacer.KeyColor = keyColor;
+                    keyPlacer.NumTotalWhiteKeys = numTotalWhiteKeys;
+
+                    _keyboardWidthOffset.Subscribe(widthOffset => keyPlacer.WidthOffset = widthOffset).AddTo(keyPlacer);
+                    _keyboardHeightOffset.Subscribe(heightOffset => keyPlacer.HeightOffset = heightOffset).AddTo(keyPlacer);
+                }
+                else
+                {
+                    var wOffset = _keyboardWidthOffset.Value;
+                    var keyboardWidth = _screenIndicator.Width;
+                    var hOffset = _keyboardHeightOffset.Value;
+
+                    var left = _screenIndicator.Center.x - _screenIndicator.Width / 2.0f + wOffset;
+                    var right = left + keyboardWidth;
+                    var bottom = _screenIndicator.Center.y - _screenIndicator.Height / 2.0f + hOffset;
+
+                    var keyWidth = keyboardWidth / (float)numTotalWhiteKeys;
+
+                    var scaleMultiplier = keyWidth / key.Width;
+                    var curScale = key.transform.localScale;
+                    key.transform.localScale = new Vector3(curScale.x * scaleMultiplier, curScale.y * scaleMultiplier, curScale.z);
+
+                    var curPos = key.transform.position;
+                    var posX = left + keyWidth * numWhiteKeys + curPos.x - key.BottomLeftPosition.x;
+                    var posY = bottom + curPos.y - key.BottomLeftPosition.y;
+                    key.transform.position = new Vector3(posX, posY, curPos.z);
+
+
+                    key.transform.SetParent(_screenIndicator.transform);
+                }
 
                 _keys.Add(noteNumber, key);
 
