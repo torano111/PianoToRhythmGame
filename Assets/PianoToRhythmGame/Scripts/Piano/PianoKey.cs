@@ -6,50 +6,39 @@ using UniRx;
 
 namespace PianoToRhythmGame.Piano
 {
+    [RequireComponent(typeof(BoxCollider2D), typeof(SpriteRenderer))]
     public class PianoKey : MonoBehaviour
     {
-        [SerializeField]
-        SpriteRenderer _keyRenderer;
+        public BoxCollider2D KeyCollider { get; private set; }
 
-        public SpriteRenderer KeyRenderer => _keyRenderer;
+        public SpriteRenderer KeyRenderer { get; private set; }
+
+        [SerializeField]
+        Vector3 _positionOffset;
+
+        public Vector3 PositionOffset => _positionOffset;
 
         /// <summary>
-        /// transform which represents the top right corner of a key
+        /// Returns width of a key.
+        /// Note that this length is in the local space since Collider.bounds is used for calculation.
         /// </summary>
-        [SerializeField]
-        Transform _topRightTransform;
-
-        public Vector3 TopRightPosition => _topRightTransform.position;
-
-        /// <summary>
-        /// transform which represents the bottom left corner of a key
-        /// </summary>
-        [SerializeField]
-        Transform _bottomLeftTransform;
-
-        public Vector3 BottomLeftPosition => _bottomLeftTransform.position;
-
         public float Width
         {
             get
             {
-                return TopRightPosition.x - BottomLeftPosition.x;
+                return KeyCollider.bounds.size.x;
             }
         }
 
+        /// <summary>
+        /// Returns height of a key.
+        /// Note that this length is in the local space since Collider.bounds is used for calculation.
+        /// </summary>
         public float Height
         {
             get
             {
-                return TopRightPosition.y - BottomLeftPosition.y;
-            }
-        }
-
-        public Vector3 CenterPosition
-        {
-            get
-            {
-                return (TopRightPosition + BottomLeftPosition) / 2.0f;
+                return KeyCollider.bounds.size.y;
             }
         }
 
@@ -62,6 +51,7 @@ namespace PianoToRhythmGame.Piano
         ReactiveProperty<bool> _isPressingRP = new ReactiveProperty<bool>(false);
         public IReadOnlyReactiveProperty<bool> IsPressingReactiveProperty => _isPressingRP;
         public bool IsPressing => IsPressingReactiveProperty.Value;
+
 
         public void PressKey()
         {
@@ -85,18 +75,10 @@ namespace PianoToRhythmGame.Piano
             }
         }
 
-        // Start is called before the first frame update
-        void Start()
+        void Awake()
         {
-            Validate();
-        }
-
-        void Validate()
-        {
-            UnityEngine.Assertions.Assert.IsNotNull(_topRightTransform, "_topRightTransform is null");
-            UnityEngine.Assertions.Assert.IsNotNull(_bottomLeftTransform, "_bottomLeftTransform is null");
-            UnityEngine.Assertions.Assert.IsTrue(_topRightTransform.position.x > _bottomLeftTransform.position.x, $"right:{_topRightTransform.position.x}, left:{_bottomLeftTransform.position.x}");
-            UnityEngine.Assertions.Assert.IsTrue(_topRightTransform.position.y > _bottomLeftTransform.position.y, $"top:{_topRightTransform.position.y}, bottom:{_bottomLeftTransform.position.y}");
+            this.KeyCollider = GetComponent<BoxCollider2D>();
+            this.KeyRenderer = GetComponent<SpriteRenderer>();
         }
     }
 }

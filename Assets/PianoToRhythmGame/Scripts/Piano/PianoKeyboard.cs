@@ -24,13 +24,13 @@ namespace PianoToRhythmGame.Piano
         PianoKeyboardType _keyboardType = PianoKeyboardType.Key88;
 
         [SerializeField]
-        FloatReactiveProperty _keyboardWidthOffset = new FloatReactiveProperty(0f);
+        float _keyboardWidthOffset = 0.09f;
 
         [SerializeField]
-        FloatReactiveProperty _keyboardHeightOffset = new FloatReactiveProperty(0f);
+        float _keyboardHeightOffset = 0.05f;
 
         [SerializeField]
-        FloatReactiveProperty _spaceBtwKeys = new FloatReactiveProperty(0f);
+        float _spaceBtwKeys = 0f;
 
         // note number and piano key
         Dictionary<int, PianoKey> _keys = new Dictionary<int, PianoKey>();
@@ -98,6 +98,10 @@ namespace PianoToRhythmGame.Piano
             _keys.Clear();
             // todo destroy old keys
 
+            // initialize transform before building a keyboard
+            transform.localScale = Vector3.one;
+            transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+
             var octaveLength = PianoUtility.NumKeysInOctave;
             var startKeyIndex = octaveLength - offset;
             var numWhiteKeys = 0;
@@ -113,6 +117,8 @@ namespace PianoToRhythmGame.Piano
                 }
             }
 
+            PianoKey firstKey = null;
+            var sumWhiteKeyWidths = 0f;
             for (var i = 0; i < numKeys; i++)
             {
                 var noteNumber = startNoteNumber + i;
@@ -123,6 +129,11 @@ namespace PianoToRhythmGame.Piano
                 }
 
                 var keyColor = PianoUtility.GetPianoKeyColor(startKeyIndex + i);
+
+                if (i == 0 && keyColor != PianoKeyColor.White)
+                {
+                    Debug.LogAssertion("The first key should be white in order to calculate black keys' position and scale properly.");
+                }
 
                 PianoKey key;
                 switch (keyColor)
@@ -137,44 +148,35 @@ namespace PianoToRhythmGame.Piano
                         throw new ArgumentException();
                 }
 
+                if (i == 0)
+                {
+                    firstKey = key;
+                }
+
                 key.NoteNumber = noteNumber;
                 key.transform.SetParent(this.transform);
 
-                if (_screenIndicator == null)
+
+                // make it sure that it is the unit scale.
+                key.transform.localScale = Vector3.one;
+
+                float posX, posY;
+                if (keyColor == PianoKeyColor.White)
                 {
+                    posX = (key.KeyCollider.bounds.size.x + _spaceBtwKeys) * numWhiteKeys + key.PositionOffset.x + _keyboardWidthOffset;
+                    posY = key.PositionOffset.y + _keyboardHeightOffset;
 
-                    var keyPlacer = key.gameObject.GetOrAddComponent<PianoKeyPlacer>();
-                    keyPlacer.NumWhilteKeysBeforeThis = numWhiteKeys;
-                    keyPlacer.KeyColor = keyColor;
-                    keyPlacer.NumTotalWhiteKeys = numTotalWhiteKeys;
-
-                    _keyboardWidthOffset.Subscribe(widthOffset => keyPlacer.WidthOffset = widthOffset).AddTo(keyPlacer);
-                    _keyboardHeightOffset.Subscribe(heightOffset => keyPlacer.HeightOffset = heightOffset).AddTo(keyPlacer);
+                    sumWhiteKeyWidths += key.KeyCollider.bounds.size.x + _spaceBtwKeys;
                 }
                 else
                 {
-                    var wOffset = _keyboardWidthOffset.Value;
-                    var keyboardWidth = _screenIndicator.Width;
-                    var hOffset = _keyboardHeightOffset.Value;
-
-                    var left = _screenIndicator.Center.x - _screenIndicator.Width / 2.0f + wOffset;
-                    var right = left + keyboardWidth;
-                    var bottom = _screenIndicator.Center.y - _screenIndicator.Height / 2.0f + hOffset;
-
-                    var keyWidth = keyboardWidth / (float)numTotalWhiteKeys;
-
-                    var scaleMultiplier = keyWidth / key.Width;
-                    var curScale = key.transform.localScale;
-                    key.transform.localScale = new Vector3(curScale.x * scaleMultiplier, curScale.y * scaleMultiplier, curScale.z);
-
-                    var curPos = key.transform.position;
-                    var posX = left + keyWidth * numWhiteKeys + curPos.x - key.BottomLeftPosition.x;
-                    var posY = bottom + curPos.y - key.BottomLeftPosition.y;
-                    key.transform.position = new Vector3(posX, posY, curPos.z);
-
-
-                    key.transform.SetParent(_screenIndicator.transform);
+                    posX = (firstKey.KeyCollider.bounds.size.x + _spaceBtwKeys) * numWhiteKeys + key.PositionOffset.x + _keyboardWidthOffset - key.KeyCollider.bounds.size.x / 2.0f - _spaceBtwKeys / 2.0f;
+                    posY = key.PositionOffset.y + _keyboardHeightOffset + firstKey.KeyCollider.bounds.size.y - key.KeyCollider.bounds.size.y;
                 }
+
+                key.transform.position = new Vector3(posX, posY, 0f);
+
+                key.transform.SetParent(this.transform);
 
                 _keys.Add(noteNumber, key);
 
@@ -183,6 +185,27 @@ namespace PianoToRhythmGame.Piano
                     numWhiteKeys++;
                 }
             }
+
+            // scale keyboard so it fits screen
+            var scaleMultiplierX = _screenIndicator.Width / (sumWhiteKeyWidths + _keyboardWidthOffset * 2);
+
+            var keyHeight = _screenIndicator.Height / 5.0f;
+            var scaleMultiplierY = keyHeight / firstKey.KeyCollider.bounds.size.y;
+
+            var keyboardScale = transform.localScale;
+            keyboardScale.x *= scaleMultiplierX;
+            keyboardScale.y *= scaleMultiplierY;
+
+            this.transform.localScale = keyboardScale;
+
+            // locate keyboard
+            var keyboardPosX = _screenIndicator.Center.x - _screenIndicator.Width / 2.0f;
+            var keyboardPosY = _screenIndicator.Center.y - _screenIndicator.Height / 2.0f;
+
+            this.transform.position = new Vector3(keyboardPosX, keyboardPosY, 0f);
+
+            // finally set keyboard's parent to screen indicator
+            this.transform.SetParent(_screenIndicator.transform);
 
             _onBuildKeyboard.OnNext(Unit.Default);
         }

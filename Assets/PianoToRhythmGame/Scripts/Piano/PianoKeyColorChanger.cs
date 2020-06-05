@@ -19,12 +19,12 @@ namespace PianoToRhythmGame.Piano
         void Awake()
         {
             _key = GetComponent<PianoKey>();
-            _initColor = _key.KeyRenderer.color;
         }
 
         // Start is called before the first frame update
         void Start()
         {
+            _initColor = _key.KeyRenderer.color;
             _key.IsPressingReactiveProperty
                 .DistinctUntilChanged()
                 .Where(pressing => pressing)
