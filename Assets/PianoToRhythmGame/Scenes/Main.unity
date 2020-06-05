@@ -193,6 +193,11 @@ PrefabInstance:
       propertyPath: _screenIndicator
       value: 
       objectReference: {fileID: 294350921769197221}
+    - target: {fileID: 241365040785126419, guid: eae50cf1f73ad7949a1177a8279d348d,
+        type: 3}
+      propertyPath: _spaceBtwKeys
+      value: 0.02
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eae50cf1f73ad7949a1177a8279d348d, type: 3}
 --- !u!1 &1423060405
